@@ -1,6 +1,8 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
-    request = require('request'),
+    //request = require('request'),
+    got = require('got'),
+
     qrcode = require('qrcode-npm'),
     decode = require('salesforce-signed-request'),
 
@@ -32,7 +34,20 @@ app.post('/signedrequest', function(req, res) {
             }
         };
 
-    request(contactRequest, function(err, response, body) {
+
+        got(contactRequest).then(response => {
+            var qr = qrcode.qrcode(4, 'L'),
+            contact = JSON.parse(body).records[0],
+            text = 'MECARD:N:' + contact.LastName + ',' + contact.FirstName + ';TEL:' + contact.Phone + ';EMAIL:' + contact.Email + ';;';
+        qr.addData(text);
+        qr.make();
+        var imgTag = qr.createImgTag(4);
+        res.render('index', {context: context, imgTag: imgTag});
+}).catch(error => {
+  console.log(error.response.body);
+});
+
+  /* request(contactRequest, function(err, response, body) {
         var qr = qrcode.qrcode(4, 'L'),
             contact = JSON.parse(body).records[0],
             text = 'MECARD:N:' + contact.LastName + ',' + contact.FirstName + ';TEL:' + contact.Phone + ';EMAIL:' + contact.Email + ';;';
@@ -40,9 +55,9 @@ app.post('/signedrequest', function(req, res) {
         qr.make();
         var imgTag = qr.createImgTag(4);
         res.render('index', {context: context, imgTag: imgTag});
-    });
+    });*/
 
-});
+}); 
 
 app.set('port', process.env.PORT || 5000);
 

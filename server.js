@@ -12,7 +12,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser()); // pull information from html in POST
 app.use(express.static(__dirname + '/public'));
 
-console.log('!!!!!!');
+console.log('!!!!!!@');
 
 app.post('/signedrequest', function(req, res) {
 
